@@ -1,0 +1,92 @@
+#!/usr/bin/env tclsh
+
+package require Tk
+package require widget::all
+
+#  Create the main message window
+bind . { <Key F1> }          { showAbout }
+bind . { <Key F5> }          { run }
+bind . { <KeyPress-Escape> } { exit }
+
+
+grid [ttk::frame .c -padding "2 6"] -column 0 -row 0 -sticky nwes
+grid columnconfigure . 0 -weight 1; grid rowconfigure . 0 -weight 1
+
+grid [ttk::label .c.usr_l -text "User id"] -column 1 -row 1 -sticky e
+if { [info exists ::env(USERNAME)] } {
+  set usr_v $env(USERNAME)
+}
+grid [ttk::entry .c.usr_i -width 30 -textvariable usr_v] -column 2 -row 1 -sticky we
+
+grid [ttk::label .c.mdp_l -text "Password"] -column 1 -row 2 -sticky e
+grid [ttk::entry .c.mdp_i -show "*" -width 30 -textvariable mdp_l] -column 2 -row 2 -sticky we
+
+
+proc ts {{n ""}} {
+  set nw [clock seconds]
+
+  if {$n ne ""} {
+    set nw [expr $nw + $n*86400]
+  }
+
+  return $nw
+}
+
+proc fmt_ts {{n ""} {f ""}} {
+  if {$f eq ""} {
+    set f "%Y-%m-%dT%H:%M:%S"
+  }
+  return [clock format [ts $n] -format $f]
+}
+
+proc date_ts {{n ""}} {
+  return [fmt_ts $n "%d/%m/%Y"]
+}
+
+set sdat_v [fmt_ts -30 "%d/%m/%Y"]
+#grid [ttk::label        .c.sdat_l -text "Start date"] -column 1 -row 3 -sticky e
+grid [ttk::label        .c.sdat_l -text $sdat_v] -column 1 -row 3 -sticky e
+#set .c.sdat_i [fmt_ts -30 "%d/%m/%Y"]
+set .c.sdat_i "04/04/2023"
+grid [widget::dateentry .c.sdat_i] -column 2 -row 3 -sticky w
+
+set edat_v [ts]
+grid [ttk::label        .c.edat_l -text  "Finish date"] -column 1 -row 4 -sticky e
+#grid [ttk::label        .c.edat_l -textvariable edat_v] -column 1 -row 4 -sticky e
+grid [widget::dateentry .c.edat_i -dateformat "%d/%m/%Y"] -column 2 -row 4 -sticky w
+
+grid [ttk::label .c.dum_l -text " "] -column 1 -row 5 -sticky w
+
+grid [ttk::button .c.can_b -text "OK"     -command run ] -column 2 -row 6 -sticky w
+grid [ttk::button .c.run_b -text "Cancel" -command exit] -column 2 -row 6 -sticky e
+
+
+foreach w [winfo children .c] {grid configure $w -padx 5 -pady 5}
+focus .c.usr_i
+bind . <Return> {run}
+
+proc run {} {
+  tk_messageBox -message "User [.c.usr_i get], start date [.c.sdat_i get], end date [.c.edat_i get]" -title {About Hello}
+}
+
+#  Create the main menu bar with a Help-About entry
+menu .menubar
+menu .menubar.file -tearoff 0
+.menubar add cascade -label File -menu .menubar.file -underline 0
+.menubar.file add command -label {About Hello ...} -accelerator F1 -underline 0 -command showAbout
+.menubar.file add command -label {Run} -accelerator F5 -underline 0 -command run
+.menubar.file add command -label {Quit} -accelerator ESC -underline 0 -command exit
+
+#  Define a procedure - an action for Help-About
+proc showAbout {} {
+  tk_messageBox -message "Tcl/Tk\nHello Windows\nVersion 1.0" -title {About Hello}
+}
+
+
+#  Configure the main window 
+wm title . {Hello world}
+#. configure -menu .menubar
+#-width 200 -height 150
+#vwait forever
+focus  -force .
+
