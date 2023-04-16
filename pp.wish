@@ -1,0 +1,6 @@
+#!env wish
+
+label .nouveau_label -text "Je dis juste bonjour !"
+button .say_ok -text "OK ?" -command { exit }
+
+pack .nouveau_label .say_ok -side top
