@@ -43,23 +43,20 @@ proc date_ts {{n ""}} {
   return [fmt_ts $n "%d/%m/%Y"]
 }
 
-set sdat_v [fmt_ts -30 "%d/%m/%Y"]
-#grid [ttk::label        .c.sdat_l -text "Start date"] -column 1 -row 3 -sticky e
-grid [ttk::label        .c.sdat_l -text $sdat_v] -column 1 -row 3 -sticky e
-#set .c.sdat_i [fmt_ts -30 "%d/%m/%Y"]
-set .c.sdat_i "04/04/2023"
-grid [widget::dateentry .c.sdat_i] -column 2 -row 3 -sticky w
+grid [ttk::label        .c.sdat_l -text "Start date"] -column 1 -row 3 -sticky e
+grid [widget::dateentry .c.sdat_i -dateformat "%d/%m/%Y"] -column 2 -row 3 -sticky w
 
-set edat_v [ts]
+set edat_v [fmt_ts -30 "%d/%m/%Y"]
 grid [ttk::label        .c.edat_l -text  "Finish date"] -column 1 -row 4 -sticky e
-#grid [ttk::label        .c.edat_l -textvariable edat_v] -column 1 -row 4 -sticky e
-grid [widget::dateentry .c.edat_i -dateformat "%d/%m/%Y"] -column 2 -row 4 -sticky w
+#grid [widget::dateentry .c.edat_i -dateformat "%d/%m/%Y"] -column 2 -row 4 -sticky w
+grid [widget::dateentry .c.edat_i -textvariable edat_v -dateformat "%d/%m/%Y"] -column 2 -row 4 -sticky w
 
 grid [ttk::label .c.dum_l -text " "] -column 1 -row 5 -sticky w
 
 grid [ttk::button .c.can_b -text "OK"     -command run ] -column 2 -row 6 -sticky w
 grid [ttk::button .c.run_b -text "Cancel" -command exit] -column 2 -row 6 -sticky e
 
+pack .c
 
 foreach w [winfo children .c] {grid configure $w -padx 5 -pady 5}
 focus .c.usr_i
